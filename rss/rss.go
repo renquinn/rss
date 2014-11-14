@@ -1,8 +1,8 @@
 package rss
 
 import (
-    "appengine"
-    "appengine/urlfetch"
+	"appengine"
+	"appengine/urlfetch"
 
 	"encoding/xml"
 	"io/ioutil"
@@ -131,26 +131,26 @@ func getHeadlines(feed []byte) ([]Headline, error) {
 func Get(link string) ([]Headline, error) {
 	resp, err := http.Get(link)
 	if err != nil {
-        return []Headline{}, err
+		return []Headline{}, err
 	}
 
 	defer resp.Body.Close()
 	feed, err := ioutil.ReadAll(resp.Body)
 
-    return getHeadlines(feed)
+	return getHeadlines(feed)
 }
 
 func GetAE(c appengine.Context, link string) ([]Headline, error) {
-    client := urlfetch.Client(c)
-    resp, err := client.Get(link)
+	client := urlfetch.Client(c)
+	resp, err := client.Get(link)
 	if err != nil {
-        return []Headline{}, err
+		return []Headline{}, err
 	}
 
 	feed, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-        return []Headline{}, err
+		return []Headline{}, err
 	}
 
-    return getHeadlines(feed)
+	return getHeadlines(feed)
 }
