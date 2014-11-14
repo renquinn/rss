@@ -10,15 +10,15 @@ import (
 
 const (
 	// Mon Jan 2 15:04:05 -0700 MST 2006
-	RSS_DATE     = "Mon, 02 Jan 2006 15:04:05 -0700"
-	ATOM_DATE    = "2006-01-02T15:04"
+	RSS_DATE  = "Mon, 02 Jan 2006 15:04:05 -0700"
+	ATOM_DATE = "2006-01-02T15:04"
 )
 
 type Headline struct {
-    Source string
-    Title string
-    Link string
-    Since time.Duration
+	Source string
+	Title  string
+	Link   string
+	Since  time.Duration
 }
 
 // RSS
@@ -81,38 +81,38 @@ func getFeed(link string) []byte {
 
 // TODO: Add picture if any to headline (e.g., xkcd)
 func GetHeadlines(link string) ([]Headline, error) {
-    headlines := make([]Headline, 0)
+	headlines := make([]Headline, 0)
 	feed := getFeed(link)
 	var i RSS
 
 	err := xml.Unmarshal(feed, &i)
 	if err == nil {
-        // If it succeeds, it was an RSS feed
+		// If it succeeds, it was an RSS feed
 
 		for _, item := range i.Channel.ItemList {
 			t, err := time.Parse(RSS_DATE, item.Date)
 			if err != nil {
-                return headlines, err
+				return headlines, err
 			}
 
-            var headline Headline
-            headline.Source = i.Channel.Title
-            headline.Title = item.Title
-            headline.Link = item.Link
-            headline.Since = time.Since(t.Local())
+			var headline Headline
+			headline.Source = i.Channel.Title
+			headline.Title = item.Title
+			headline.Link = item.Link
+			headline.Since = time.Since(t.Local())
 
-            headlines = append(headlines, headline)
+			headlines = append(headlines, headline)
 		}
 	} else {
-        // If it failed, it might just be an Atom feed
+		// If it failed, it might just be an Atom feed
 
 		var j Feed
 
 		err := xml.Unmarshal(feed, &j)
 		if err != nil {
-            // If it failed again, you either messed up, or it was an
-            // unsupported feed
-            return headlines, err
+			// If it failed again, you either messed up, or it was an
+			// unsupported feed
+			return headlines, err
 		}
 
 		for _, entry := range j.Entry {
@@ -123,17 +123,17 @@ func GetHeadlines(link string) ([]Headline, error) {
 			t, err := time.Parse(ATOM_DATE, date[:len(ATOM_DATE)])
 
 			if err != nil {
-                return headlines, err
+				return headlines, err
 			}
 
-            var headline Headline
-            headline.Source = j.Title
-            headline.Title = entry.Title
-            headline.Link = entry.Link.Href
-            headline.Since = time.Since(t.Local())
-            headlines = append(headlines, headline)
+			var headline Headline
+			headline.Source = j.Title
+			headline.Title = entry.Title
+			headline.Link = entry.Link.Href
+			headline.Since = time.Since(t.Local())
+			headlines = append(headlines, headline)
 		}
 	}
 
-    return headlines, nil
+	return headlines, nil
 }
