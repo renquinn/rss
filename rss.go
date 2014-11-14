@@ -10,7 +10,6 @@ import (
 
 const (
 	// Mon Jan 2 15:04:05 -0700 MST 2006
-	UPDATE_RANGE = 1
 	RSS_DATE     = "Mon, 02 Jan 2006 15:04:05 -0700"
 	ATOM_DATE    = "2006-01-02T15:04"
 )
