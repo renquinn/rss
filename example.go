@@ -8,7 +8,7 @@ import (
 func main() {
     link := "http://xkcd.com/rss.xml"
 
-    headlines, err := rss.GetHeadlines(link)
+    headlines, err := rss.Get(link)
     if err != nil {
         panic(err)
     }

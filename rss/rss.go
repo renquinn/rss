@@ -1,6 +1,9 @@
 package rss
 
 import (
+    "appengine"
+    "appengine/urlfetch"
+
 	"encoding/xml"
 	"io/ioutil"
 	"log"
@@ -67,22 +70,9 @@ type Person struct {
 	Email string `xml:"email"`
 }
 
-func getFeed(link string) []byte {
-	resp, err := http.Get(link)
-	if err != nil {
-		log.Println("***ERROR: http.Get", err, link)
-	}
-
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-
-	return body
-}
-
 // TODO: Add picture if any to headline (e.g., xkcd)
-func GetHeadlines(link string) ([]Headline, error) {
+func getHeadlines(feed []byte) ([]Headline, error) {
 	headlines := make([]Headline, 0)
-	feed := getFeed(link)
 	var i RSS
 
 	err := xml.Unmarshal(feed, &i)
@@ -136,4 +126,31 @@ func GetHeadlines(link string) ([]Headline, error) {
 	}
 
 	return headlines, nil
+}
+
+func Get(link string) ([]Headline, error) {
+	resp, err := http.Get(link)
+	if err != nil {
+        return []Headline{}, err
+	}
+
+	defer resp.Body.Close()
+	feed, err := ioutil.ReadAll(resp.Body)
+
+    return getHeadlines(feed)
+}
+
+func GetAE(c appengine.Context, link string) ([]Headline, error) {
+    client := urlfetch.Client(c)
+    resp, err := client.Get(link)
+	if err != nil {
+        return []Headline{}, err
+	}
+
+	feed, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+        return []Headline{}, err
+	}
+
+    return getHeadlines(feed)
 }
