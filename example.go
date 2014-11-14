@@ -2,7 +2,7 @@ package main
 
 import (
     "fmt"
-    "rss"
+    "github.com/renquinn/rss/rss"
 )
 
 func main() {
