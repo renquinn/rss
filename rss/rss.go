@@ -12,7 +12,9 @@ import (
 
 const (
 	// Mon Jan 2 15:04:05 -0700 MST 2006
+	// TODO: See http://golang.org/src/pkg/time/format.go
 	RSS_DATE  = "Mon, 02 Jan 2006 15:04:05 -0700"
+	RSS_DATE2 = "Mon, 02 Jan 2006 15:04:05 MST"
 	ATOM_DATE = "2006-01-02T15:04"
 )
 
@@ -81,7 +83,10 @@ func getHeadlines(feed []byte) ([]Headline, error) {
 		for _, item := range i.Channel.ItemList {
 			t, err := time.Parse(RSS_DATE, item.Date)
 			if err != nil {
-				return headlines, err
+				t, err = time.Parse(RSS_DATE2, item.Date)
+				if err != nil {
+					return headlines, err
+				}
 			}
 
 			var headline Headline
